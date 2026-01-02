@@ -308,6 +308,7 @@ export default function WordsGame({ hasStar, onAward }: Props) {
           e.preventDefault();
           drop();
         }}
+        style={{ touchAction: "manipulation" }}
       >
         <canvas ref={canvasRef} />
       </div>

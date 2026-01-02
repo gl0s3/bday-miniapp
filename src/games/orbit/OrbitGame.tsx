@@ -165,9 +165,17 @@ export default function OrbitGame({ hasStar, onAward }: Props) {
 
       <div style={{ height: 10 }} />
 
-      <div className="canvasWrap" onClick={tap} onTouchStart={(e) => { e.preventDefault(); tap(); }}>
-        <canvas ref={canvasRef} />
-      </div>
+      <div
+      className="canvasWrap"
+      onPointerDown={(e) => {
+        e.preventDefault();
+        tap();
+      }}
+      style={{ touchAction: "manipulation" }}
+    >
+      canvas ref={canvasRef} />
+    </div>
+
 
       <div style={{ height: 10 }} />
       <button className="btn secondary" onClick={reset}>
