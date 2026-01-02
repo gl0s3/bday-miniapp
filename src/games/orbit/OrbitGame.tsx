@@ -173,7 +173,7 @@ export default function OrbitGame({ hasStar, onAward }: Props) {
       }}
       style={{ touchAction: "manipulation" }}
     >
-      canvas ref={canvasRef} />
+      anvas ref={canvasRef} />
     </div>
 
 
