@@ -19,7 +19,7 @@ export default function OrbitGame({ hasStar, onAward }: Props) {
     t: 0,
     speed: 1.10,
     targetAngle: Math.random() * Math.PI * 2,
-    window: 1.05 // стартовая зона
+    window: 1.05
   });
 
   useEffect(() => {
@@ -44,24 +44,23 @@ export default function OrbitGame({ hasStar, onAward }: Props) {
       const s = stateRef.current;
       s.t += dt * s.speed;
 
-      // draw
       ctx.clearRect(0, 0, c.width, c.height);
-      const w = c.width, h = c.height;
+      const w = c.width,
+        h = c.height;
 
       ctx.fillStyle = "rgba(11,16,32,1)";
       ctx.fillRect(0, 0, w, h);
 
-      const cx = w / 2, cy = h / 2;
+      const cx = w / 2,
+        cy = h / 2;
       const R = Math.min(w, h) * 0.33;
 
-      // ring
       ctx.strokeStyle = "rgba(255,255,255,0.16)";
       ctx.lineWidth = Math.max(2, Math.floor(Math.min(w, h) * 0.01));
       ctx.beginPath();
       ctx.arc(cx, cy, R, 0, Math.PI * 2);
       ctx.stroke();
 
-      // target window
       const a0 = s.targetAngle - s.window / 2;
       const a1 = s.targetAngle + s.window / 2;
       ctx.strokeStyle = "rgba(34,197,94,0.90)";
@@ -70,7 +69,6 @@ export default function OrbitGame({ hasStar, onAward }: Props) {
       ctx.arc(cx, cy, R, a0, a1);
       ctx.stroke();
 
-      // moving dot
       const a = s.t;
       const x = cx + Math.cos(a) * R;
       const y = cy + Math.sin(a) * R;
@@ -79,7 +77,6 @@ export default function OrbitGame({ hasStar, onAward }: Props) {
       ctx.arc(x, y, Math.min(w, h) * 0.032, 0, Math.PI * 2);
       ctx.fill();
 
-      // HUD
       ctx.fillStyle = "rgba(255,255,255,0.92)";
       ctx.font = `${Math.floor(h * 0.045)}px system-ui`;
       ctx.fillText(`Счёт: ${score}`, 18, 44);
@@ -120,7 +117,6 @@ export default function OrbitGame({ hasStar, onAward }: Props) {
       setHits((v) => v + 1);
       setScore((sc) => sc + 1);
 
-      // tiny difficulty increase
       s.speed = Math.min(1.55, s.speed + 0.015);
       s.window = Math.max(0.55, s.window - 0.02);
       s.targetAngle = Math.random() * Math.PI * 2;
@@ -132,7 +128,6 @@ export default function OrbitGame({ hasStar, onAward }: Props) {
       setMisses((m) => m + 1);
       setScore((sc) => Math.max(0, sc - 5));
 
-      // small extra punish: shrink a bit (but keep reasonable)
       s.window = Math.max(0.50, s.window - 0.01);
       s.targetAngle = Math.random() * Math.PI * 2;
     }
@@ -152,12 +147,8 @@ export default function OrbitGame({ hasStar, onAward }: Props) {
     <>
       <div className="card">
         <div className="h1">Orbit</div>
-        <div className="p">
-          Правила: по кругу летает фиолетовая точка. Есть зелёная зона. Тапай, когда точка в зоне.
-        </div>
-        <div className="p">
-          Очки: попадание \(+1\), промах \(-5\). Зона постепенно уменьшается. Цель для звезды: набрать счёт {needHits}.
-        </div>
+        <div className="p">Правила: по кругу летает фиолетовая точка. Есть зелёная зона. Тапай, когда точка в зоне.</div>
+        <div className="p">Очки: попадание +1, промах -5. Зона постепенно уменьшается. Цель для звезды: набрать счёт {needHits}.</div>
         <div className="p">
           {message} | Звезда: {hasStar ? "★" : "☆"}
         </div>
@@ -166,16 +157,15 @@ export default function OrbitGame({ hasStar, onAward }: Props) {
       <div style={{ height: 10 }} />
 
       <div
-      className="canvasWrap"
-      onPointerDown={(e) => {
-        e.preventDefault();
-        tap();
-      }}
-      style={{ touchAction: "manipulation" }}
-    >
-      anvas ref={canvasRef} />
-    </div>
-
+        className="canvasWrap"
+        onPointerDown={(e) => {
+          e.preventDefault();
+          tap();
+        }}
+        style={{ touchAction: "manipulation" }}
+      >
+        anvas ref={canvasRef} />
+      </div>
 
       <div style={{ height: 10 }} />
       <button className="btn secondary" onClick={reset}>

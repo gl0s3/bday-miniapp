@@ -49,9 +49,7 @@ export default function WordsGame({ hasStar, onAward }: Props) {
     base: { x: 0, y: 0, w: 220, h: 26, color: hueColor(210) } as Block,
     moving: { x: 0, y: 0, w: 220, h: 26, color: hueColor(240) } as Block,
     stack: [] as Block[],
-    // params
-    perfectPx: 6, // how close to count as perfect
-    // for small screen margins
+    perfectPx: 6,
     topMargin: 0
   });
 
@@ -118,9 +116,8 @@ export default function WordsGame({ hasStar, onAward }: Props) {
       const s = stateRef.current;
       s.W = c.width;
       s.H = c.height;
-      s.topMargin = Math.floor(s.H * 0.22); // keep tower top below this margin
+      s.topMargin = Math.floor(s.H * 0.22);
 
-      // if first time or stack empty: init
       if (s.stack.length === 0) initBase();
     };
 
@@ -139,7 +136,6 @@ export default function WordsGame({ hasStar, onAward }: Props) {
       if (s.running) {
         const top = s.stack[s.stack.length - 1];
 
-        // move block
         s.moving.x += s.dir * s.speed * dt;
         const minX = -top.w * 0.85;
         const maxX = s.W - top.w * 0.15;
@@ -153,20 +149,13 @@ export default function WordsGame({ hasStar, onAward }: Props) {
           s.dir = -1;
         }
 
-        // camera: ensure tower top stays visible
-        // desired top of tower (world coords)
-        const towerTopY = top.y; // top edge of current top block (y is top)
-        // We want (towerTopY + camY) to be around topMargin
+        const towerTopY = top.y;
         const desiredCamY = s.topMargin - towerTopY;
-
-        // Only move camera upward (more negative) when needed, and smooth it
         const targetCamY = Math.min(0, desiredCamY);
-        // smooth damp
         s.camY += (targetCamY - s.camY) * clamp(dt * 6.5, 0, 1);
       }
 
       draw(ctx, s, score, height);
-
       rafRef.current = requestAnimationFrame(loop);
     };
 
@@ -201,34 +190,19 @@ export default function WordsGame({ hasStar, onAward }: Props) {
       return;
     }
 
-    // perfect check: almost same left edge AND width close enough
     const dx = Math.abs(s.moving.x - top.x);
     const dw = Math.abs(s.moving.w - top.w);
     const isPerfect = dx <= s.perfectPx && dw <= s.perfectPx;
 
     const placed: Block = isPerfect
-      ? {
-          // snap to perfect
-          x: top.x,
-          y: s.moving.y,
-          w: top.w,
-          h: s.moving.h,
-          color: s.moving.color
-        }
-      : {
-          x: overlap0,
-          y: s.moving.y,
-          w: overlapW,
-          h: s.moving.h,
-          color: s.moving.color
-        };
+      ? { x: top.x, y: s.moving.y, w: top.w, h: s.moving.h, color: s.moving.color }
+      : { x: overlap0, y: s.moving.y, w: overlapW, h: s.moving.h, color: s.moving.color };
 
     s.stack.push(placed);
 
     const newHeight = s.stack.length - 1;
     setHeight(newHeight);
 
-    // scoring: +1 always, +2 extra if perfect
     setScore((sc) => {
       const add = isPerfect ? 3 : 1;
       const next = sc + add;
@@ -253,7 +227,6 @@ export default function WordsGame({ hasStar, onAward }: Props) {
       beep(740, 55, 0.04);
     }
 
-    // next
     (s as any).spawnMoving?.();
   }
 
@@ -268,7 +241,6 @@ export default function WordsGame({ hasStar, onAward }: Props) {
     setHeight(0);
     setMessage("Тапни, чтобы уронить блок");
 
-    // re-init base and moving based on current canvas
     const baseW = Math.floor(s.W * 0.66);
     const blockH = Math.floor(s.H * 0.045);
 
@@ -303,14 +275,13 @@ export default function WordsGame({ hasStar, onAward }: Props) {
 
       <div
         className="canvasWrap"
-        onClick={drop}
-        onTouchStart={(e) => {
+        onPointerDown={(e) => {
           e.preventDefault();
           drop();
         }}
         style={{ touchAction: "manipulation" }}
       >
-        <canvas ref={canvasRef} />
+        anvas ref={canvasRef} />
       </div>
 
       <div style={{ height: 10 }} />
@@ -325,18 +296,15 @@ function draw(ctx: CanvasRenderingContext2D, s: any, score: number, height: numb
   const W = s.W as number;
   const H = s.H as number;
 
-  // background
   ctx.fillStyle = "rgba(11,16,32,1)";
   ctx.fillRect(0, 0, W, H);
 
-  // subtle glow
   const grad = ctx.createRadialGradient(W * 0.35, H * 0.15, 0, W * 0.35, H * 0.15, Math.max(W, H) * 0.9);
   grad.addColorStop(0, "rgba(139,92,246,0.28)");
   grad.addColorStop(1, "rgba(0,0,0,0)");
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, W, H);
 
-  // grid
   ctx.strokeStyle = "rgba(255,255,255,0.06)";
   ctx.lineWidth = 1;
   for (let y = 0; y < H; y += Math.floor(H * 0.08)) {
@@ -346,11 +314,9 @@ function draw(ctx: CanvasRenderingContext2D, s: any, score: number, height: numb
     ctx.stroke();
   }
 
-  // world
   ctx.save();
   ctx.translate(0, s.camY);
 
-  // stack
   for (const b of s.stack as Block[]) {
     ctx.fillStyle = b.color;
     roundRect(ctx, b.x, b.y, b.w, b.h, 14);
@@ -361,7 +327,6 @@ function draw(ctx: CanvasRenderingContext2D, s: any, score: number, height: numb
     ctx.stroke();
   }
 
-  // moving
   if (s.running) {
     const m = s.moving as Block;
     ctx.fillStyle = m.color;
@@ -374,7 +339,6 @@ function draw(ctx: CanvasRenderingContext2D, s: any, score: number, height: numb
 
   ctx.restore();
 
-  // overlay if game over
   if (!s.running) {
     ctx.fillStyle = "rgba(0,0,0,0.55)";
     ctx.fillRect(0, 0, W, H);
@@ -385,7 +349,6 @@ function draw(ctx: CanvasRenderingContext2D, s: any, score: number, height: numb
     ctx.fillText("Нажми «Заново»", 18, H * 0.48);
   }
 
-  // HUD
   ctx.fillStyle = "rgba(255,255,255,0.92)";
   ctx.font = `${Math.floor(H * 0.04)}px system-ui`;
   ctx.fillText(`Счёт: ${score}`, 18, 42);
