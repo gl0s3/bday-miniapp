@@ -273,16 +273,17 @@ export default function WordsGame({ hasStar, onAward }: Props) {
 
       <div style={{ height: 10 }} />
 
-      <div
-        className="canvasWrap"
-        onPointerDown={(e) => {
-          e.preventDefault();
-          drop();
-        }}
-        style={{ touchAction: "manipulation" }}
-      >
-        anvas ref={canvasRef} />
-      </div>
+<div
+  className="canvasWrap"
+  onPointerDown={(e) => {
+    e.preventDefault();
+    drop();
+  }}
+  style={{ touchAction: "manipulation" }}
+>
+  <canvas ref={canvasRef} />
+</div>
+
 
       <div style={{ height: 10 }} />
       <button className="btn" onClick={restart}>
